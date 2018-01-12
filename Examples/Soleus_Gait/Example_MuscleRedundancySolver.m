@@ -9,6 +9,11 @@
 % - Installation Adigator
 % - OpenSim 3.2 or 3.3 for muscle analysis (including matlab API)
 
+%% Notes
+
+% - It would be interesting to see what happens when you add a tibial
+% muscle  (Maarten
+% - try this example on the hamner running data as well  (Maarten)
 
 %% Settings
 
@@ -61,7 +66,7 @@ lMTinterp = interp1(DatStore.time,DatStore.LMT,Time);
 
 % To Do: Add metabolic energy computation and add to figure
 figure();
-ATendon=[2.5 2.6 2.7 2.8 2.9 3 4 7 8 9 10 15 35 60];
+ATendon=[2.5 2.7  2.9 3 4 7 8 9 10 15 35 60 100 150 200];
 Cols=hsv(length(ATendon)+10);
 for i=1:length(ATendon);
     setup.auxdata.Atendon=ATendon(i);    
@@ -115,6 +120,15 @@ for i=1:length(ATendon);
     plot(ATendon(i),PosWork,'*','Color',Cols(i,:)); hold on;
     plot(ATendon(i),NegWork,'*','Color',Cols(i,:)); hold on;
     
+    % compute metabolic energy
+    FMltilde = get_Flm_tilde(lMtilde,auxdata.Faparam);      % Maarten: not sure if this is the right input
+    MuscleMass = 0.5;       % guess of muscle mass (kg)
+    TwitchRatio = 0.5;      % guess of percentage slow twitch fibers  
+    [energy_total,energy_am,energy_sl,energy_mech] = ComputeMetabolicEnergy_Umberger2003(MActivation,...
+        lMtilde,vMtilde,vM,TForce,MuscleMass,TwitchRatio,10,FMltilde);
+    E=trapz(Time(is),energy_total(is).*MuscleMass);
+    subplot(2,3,6)
+    plot(ATendon(i),E,'*','Color',Cols(i,:)); hold on;
 end
 
 subplot(2,3,1)
@@ -133,7 +147,9 @@ ylabel('Muscle power [N]');
 set(gca,'YLim',[-200 150]);
 subplot(2,3,5)
 xlabel('ATendon');
-ylabel('Muscle fiber work');
-
+ylabel('Muscle fiber work: stance phase');
+subplot(2,3,6)
+xlabel('ATendon');
+ylabel('Metabolic work stance phase ');
 
 

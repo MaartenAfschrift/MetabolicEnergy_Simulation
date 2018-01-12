@@ -1,5 +1,5 @@
 
-%% Example_MuscleRedundacySolver
+%% Example_MuscleRedundacySolver => running data Hamner
 % This script is used to solve the muscle redundancy problem in a simple
 % example and to simulate muscle-tendon dynamics
 
@@ -9,11 +9,6 @@
 % - Installation Adigator
 % - OpenSim 3.2 or 3.3 for muscle analysis (including matlab API)
 
-%% Notes
-
-% - It would be interesting to see what happens when you add a tibial
-% muscle  (Maarten
-% - try this example on the hamner running data as well  (Maarten)
 
 %% Settings
 
@@ -29,22 +24,20 @@ S.BoolLinearSpring = 1;                 % using linear or non-linear spring for 
 
 if S.GetOptInput==1    
     % get walking example OpenSim results
-    Datapath=fullfile(S.OpenSimInstallation, 'Models\Gait10dof18musc\OutputReference');
-    IK_path=fullfile(Datapath,'IK','subject01_walk_IK.mot');
-    ID_path=[];%fullfile(Datapath,'ID','inversedynamics.sto'); % compute ID from the external loads
-    model_path=fullfile(Datapath,'subject01.osim');
-    time=[0.6 1.7];     % Part of the right stance phase
+    Datapath='C:\Users\u0088756\Documents\documenten\software\SoftwareProjects\solvemuscleredundancy\Examples\Example_Hamner2010';
+    IK_path=fullfile(Datapath,'OGrun3_IKKS.mot');
+    ID_path=fullfile(Datapath,'OGrun3.sto');
+    model_path=fullfile(Datapath,'Hamner2010_S2R_Michelle_scaled.osim');
+    time=[0.7 1.15];     % Part of the right stance phase
     if ~isdir(S.OutFolder ); mkdir(S.OutFolder ); end
-    Misc.DofNames_Input={'ankle_angle_r'};
-    Misc.Loads_path=fullfile(Datapath,'ExperimentalData','subject01_walk_grf.xml');
-    Misc.ID_ResultsPath=fullfile(Datapath,'ID','inversedynamics.sto');
+    Misc.DofNames_Input={'ankle_angle_r'};    
     Misc.MuscleNames_Input={'soleus_r'};      % Selects all muscles for the Input DOFS when this is left empty.
     Misc.Atendon=35;
     Misc.Mesh_Frequency=150;         
     [setup,auxdata,DatStore]=GetFtildeSetup(model_path,IK_path,ID_path,time,S.OutFolder ,Misc);  
-    save('optInput.mat','setup','auxdata','DatStore');
+    save('optInput_HamnerRunning.mat','setup','auxdata','DatStore');
 else
-    load('optInput.mat')
+    load('optInput_HamnerRunning.mat')
 end
 
 
@@ -64,6 +57,7 @@ lMTinterp = interp1(DatStore.time,DatStore.LMT,Time);
 
 %% Run optimization for different levels of tendon stiffness
 
+t_selPower=[0.75 1.1];
 % Compute energy-related information on the skeletal level
 Ta=ppval(auxdata.JointIDSpline,Time);
 IK=importdata(IK_path);
@@ -80,7 +74,7 @@ JointPowerNeg=AnklePower;     JointPowerNeg(AnklePower>0)=0;    NegWork=trapz(Ti
 % To Do: Add metabolic energy computation and add to figure
 figure();
 % ATendon=[2.5 2.7  2.9 3 4 7 8 9 10 15 35 60 100 150 200];
-ATendon=[3 10 20 50];
+ATendon=[5 6 7 8 10:5:50 60:20:250];
 Cols=hsv(length(ATendon)+10);
 for i=1:length(ATendon);
     
@@ -124,8 +118,8 @@ for i=1:length(ATendon);
     PowerPos=Power; PowerPos(Power<0)=0;
     
     % select only stance phase
-    i0=find(Time>0.7,1,'first');
-    iend=find(Time>1.45,1,'first');
+    i0=find(Time>t_selPower(1),1,'first');
+    iend=find(Time>t_selPower(end),1,'first');
     is=i0:iend;
     
     PosWork=trapz(Time(is),PowerPos(is));
@@ -170,7 +164,7 @@ set(gca,'YLim',[0 2000]);
 subplot(3,3,4)
 xlabel('Time [s]');
 ylabel('Muscle power [N]');
-set(gca,'YLim',[-200 150]);
+set(gca,'YLim',[-400 400]);
 subplot(3,3,5)
 xlabel('ATendon');
 ylabel('Muscle fiber work: stance phase');
@@ -179,7 +173,7 @@ xlabel('ATendon');
 ylabel('Metabolic work stance phase ');
 subplot(3,3,7)
 plot(Time,AnklePower,'k','LineWidth',2);
-set(gca,'YLim',[-200 200]);
+set(gca,'YLim',[-800 800]);
 xlabel('Time [s]');
 ylabel('Power [W]');
 

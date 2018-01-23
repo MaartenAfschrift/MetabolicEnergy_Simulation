@@ -138,7 +138,7 @@ for i=1:length(ATendon);
     % compute metabolic energy
     FMltilde = get_Flm_tilde(lMtilde,auxdata.Faparam);      % Maarten: not sure if this is the right input
     MuscleMass = 0.5;       % guess of muscle mass (kg)
-    TwitchRatio = 0.5;      % guess of percentage slow twitch fibers  
+    TwitchRatio = 50;      % guess of percentage slow twitch fibers  
     [energy_total,energy_am,energy_sl,energy_mech] = ComputeMetabolicEnergy_Umberger2003(MActivation,...
         lMtilde,vMtilde,vM,TForce,MuscleMass,TwitchRatio,10,FMltilde);
     E=trapz(Time(is),energy_total(is).*MuscleMass);

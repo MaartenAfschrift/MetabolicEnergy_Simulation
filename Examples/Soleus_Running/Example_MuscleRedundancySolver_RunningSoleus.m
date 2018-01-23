@@ -132,7 +132,7 @@ for i=1:length(ATendon);
     % compute metabolic energy
     FMltilde = get_Flm_tilde(lMtilde,auxdata.Faparam);      % Maarten: not sure if this is the right input
     MuscleMass = 0.5;       % guess of muscle mass (kg)
-    TwitchRatio = 0.5;      % guess of percentage slow twitch fibers  
+    TwitchRatio = 50;      % guess of percentage slow twitch fibers  
     [energy_total,energy_am,energy_sl,energy_mech] = ComputeMetabolicEnergy_Umberger2003(MActivation,...
         lMtilde,vMtilde,vM,TForce,MuscleMass,TwitchRatio,10,FMltilde);
     E=trapz(Time(is),energy_total(is).*MuscleMass);
@@ -147,6 +147,16 @@ for i=1:length(ATendon);
     b=bar(i+4,E); hold on;
     b.FaceColor=Cols(i,:); hold on;
     plot(i+4,PosWork,'*k');
+    
+    % only positive metabolic work => no energy storage in cross bridges ?
+    MetabPower=energy_total.*MuscleMass;
+    MetabPower_pos=MetabPower; MetabPower_pos(MetabPower<0)=0;
+    MetabWork_pos=trapz(Time(is),MetabPower_pos(is));
+    
+    subplot(3,3,9)
+    b=bar(i+4,MetabWork_pos); hold on;
+    b.FaceColor=Cols(i,:); hold on;
+    plot(i+4,PosWork,'*k');   
     
     
 end
@@ -185,4 +195,18 @@ bar(1,JointWork,'k');
 bar(2,PosWork,'k');
 bar(2,NegWork,'k');
 bar(3,abs(PosWork)+abs(NegWork),'k');
-ylabel('Joint Work');
+ylabel('Work');
+xlabel('ATendon');
+
+subplot(3,3,9)
+JointWork=trapz(Time(is),AnklePower(is));       % net work
+JointPowerPos=AnklePower;     JointPowerPos(AnklePower<0)=0;    PosWork=trapz(Time(is),JointPowerPos(is));
+JointPowerNeg=AnklePower;     JointPowerNeg(AnklePower>0)=0;    NegWork=trapz(Time(is),JointPowerNeg(is));
+bar(1,JointWork,'k');
+bar(2,PosWork,'k');
+bar(2,NegWork,'k');
+bar(3,abs(PosWork)+abs(NegWork),'k');
+ylabel('Pos metab work');
+xlabel('ATendon');
+
+% Things to Add => compute energy in tendon ?

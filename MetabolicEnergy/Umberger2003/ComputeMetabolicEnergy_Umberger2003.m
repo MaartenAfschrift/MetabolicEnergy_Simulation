@@ -3,7 +3,7 @@ function [energy_total,energy_am,energy_sl,energy_mech] = ComputeMetabolicEnergy
 %   Detailed explanation goes here
 
 % afleiden uit OpenSim
-pctft = 1-pctst;
+pctft = 100-pctst;
 s = 1.5;            % scaling for aerobic activities (1.5) or anaerobic activities (1)
 
 %% heat activation and maintenanance

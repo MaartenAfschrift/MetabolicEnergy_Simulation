@@ -1,10 +1,18 @@
-function [energy_total,energy_am,energy_sl,energy_mech] = ComputeMetabolicEnergy_Umberger2003(act,lmtilde,vtilde,vM,force,musclemass,pctst,vcemax_ft,fiso )
+function [energy_total,energy_am,energy_sl,energy_mech] = ComputeMetabolicEnergy_Umberger2003(exc,act,lmtilde,vtilde,vM,force,musclemass,pctst,vcemax_ft,fiso)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
 % afleiden uit OpenSim
 pctft = 100-pctst;
 s = 1.5;            % scaling for aerobic activities (1.5) or anaerobic activities (1)
+
+%% stimulations and activations
+
+ind_act_1 = find(exc > act);
+ind_act_2 = find(exc <= act);
+
+a(ind_act_1,1) = exc(ind_act_1,1);
+a(ind_act_2,1) = (exc(ind_act_2,1)+act(ind_act_2,1))/2;
 
 %% heat activation and maintenanance
 
@@ -18,7 +26,7 @@ hdotam(ind_lv_2,1) = 1.28*pctft+25;
 hdotam(ind_lv_3,1) = 0.4*(1.28*pctft+25)+0.6.*(1.28*pctft+25).*fiso(ind_lv_3,1);
 hdotam(ind_lv_4,1) = 0.4*(1.28*pctft+25)+0.6.*(1.28*pctft+25).*fiso(ind_lv_4,1);
 
-aam = act.^(0.6);
+aam = a.^(0.6);
 energy_am = hdotam.*aam*s; % activaties die 0 zijn betekenen dat er geen energieverbruik is voor activation and maintenance op dat moment (zie toevoeging paper op 104 L boven)
 
 %% heat shortening and lengthening
@@ -32,10 +40,10 @@ hdotsl(ind_lv_2,1) = coef_hl.*vtilde(ind_lv_2,1);
 hdotsl(ind_lv_3,1) = -1.*coef_hs_st.*vtilde(ind_lv_3,1).*pctst - coef_hs_ft.*vtilde(ind_lv_3,1).*pctft;
 hdotsl(ind_lv_4,1) = coef_hl.*vtilde(ind_lv_4,1);
 
-energy_sl(ind_lv_1,1) = hdotsl(ind_lv_1,1).*(act(ind_lv_1,1).^2).*s;
-energy_sl(ind_lv_2,1) = hdotsl(ind_lv_2,1).*act(ind_lv_2,1).*s;
-energy_sl(ind_lv_3,1) = hdotsl(ind_lv_3,1).*fiso(ind_lv_3,1).*(act(ind_lv_3,1).^2).*s; % activaties die 0 zijn betekenen dat er geen energieverbruik is voor shortening & lenghtening op dat moment
-energy_sl(ind_lv_4,1) = hdotsl(ind_lv_4,1).*fiso(ind_lv_4,1).*act(ind_lv_4,1).*s;
+energy_sl(ind_lv_1,1) = hdotsl(ind_lv_1,1).*(a(ind_lv_1,1).^2).*s;
+energy_sl(ind_lv_2,1) = hdotsl(ind_lv_2,1).*a(ind_lv_2,1).*s;
+energy_sl(ind_lv_3,1) = hdotsl(ind_lv_3,1).*fiso(ind_lv_3,1).*(a(ind_lv_3,1).^2).*s; % activaties die 0 zijn betekenen dat er geen energieverbruik is voor shortening & lenghtening op dat moment
+energy_sl(ind_lv_4,1) = hdotsl(ind_lv_4,1).*fiso(ind_lv_4,1).*a(ind_lv_4,1).*s;
 
 %% mechanical work
 

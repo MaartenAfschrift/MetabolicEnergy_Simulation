@@ -1,3 +1,4 @@
+clear all; close all; clc
 
 %% Example_MuscleRedundacySolver
 % This script is used to solve the muscle redundancy problem in a simple
@@ -15,10 +16,14 @@
 % muscle  (Maarten
 % - try this example on the hamner running data as well  (Maarten)
 
-%% Settings
+%% Add paths
 
-S.GetOptInput=0;
-S.OpenSimInstallation='C:\OpenSim33';
+addpath(genpath('C:\Users\u0098084\Documents\MATLAB\Metabolic Energy'));
+
+%% Setting
+
+S.GetOptInput=1;
+S.OpenSimInstallation='C:\OpenSim 3.3';
 S.OutFolder='C:\tempData';              % please don't add temporary simulations results to the main project folder
 S.BoolLinearSpring = 1;                 % using linear or non-linear spring for tendon
 
@@ -139,7 +144,7 @@ for i=1:length(ATendon);
     FMltilde = get_Flm_tilde(lMtilde,auxdata.Faparam);      % Maarten: not sure if this is the right input
     MuscleMass = 0.5;       % guess of muscle mass (kg)
     TwitchRatio = 50;      % guess of percentage slow twitch fibers  
-    [energy_total,energy_am,energy_sl,energy_mech] = ComputeMetabolicEnergy_Umberger2003(MActivation,...
+    [energy_total,energy_am,energy_sl,energy_mech] = ComputeMetabolicEnergy_Umberger2003(MExcitation, MActivation,...
         lMtilde,vMtilde,vM,TForce,MuscleMass,TwitchRatio,10,FMltilde);
     E=trapz(Time(is),energy_total(is).*MuscleMass);
     subplot(3,3,6)

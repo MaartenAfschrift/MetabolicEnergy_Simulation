@@ -93,7 +93,7 @@ totalHeatRate(ind_thr_1,1) = 1;
 energy_am = energy_am.*musclemass;
 energy_sl = energy_sl.*musclemass;
 energy_mech = energy_mech.*musclemass;
-energy_total = (totalHeatRate+energy_mech).*musclemass;
-
+energy_total = totalHeatRate.*musclemass+energy_mech;
 
 end
+

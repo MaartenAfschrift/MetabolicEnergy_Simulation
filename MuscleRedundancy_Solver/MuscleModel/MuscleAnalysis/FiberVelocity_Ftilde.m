@@ -28,6 +28,6 @@ else
 end
 cos_alpha = (lMT-lTs.*lTtilde)./lM;
 vM = (vMT-vT).*cos_alpha;
-vMtilde = vM./vMmax;
+vMtilde = vM./lMo;
 end
 

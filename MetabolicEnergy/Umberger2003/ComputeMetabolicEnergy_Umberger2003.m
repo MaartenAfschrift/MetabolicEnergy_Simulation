@@ -1,9 +1,9 @@
 function [energy_total,energy_am,energy_sl,energy_mech] = ComputeMetabolicEnergy_Umberger2003(exc,act,lmtilde,vtilde,vM,force,musclemass,pctst,vcemax_ft,fiso)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%COMPUTEMETABOLICENERGY_UMBERGER 2003 formules uit Umberger 2003 om het
+% metabole energieverbruik op spierniveau te berekenen
 
 % afleiden uit OpenSim
-pctft = 100-pctst;
+pctft = (100-pctst)/100;
 s = 1.5;            % scaling for aerobic activities (1.5) or anaerobic activities (1)
 
 %% stimulations and activations

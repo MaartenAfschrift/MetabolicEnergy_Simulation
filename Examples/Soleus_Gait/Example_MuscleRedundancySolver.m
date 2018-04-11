@@ -16,7 +16,7 @@ clear all; close all; clc
 % muscle  (Maarten
 % - try this example on the hamner running data as well  (Maarten)
 
-%% Add paths
+%% paths
 
 addpath(genpath('C:\Users\u0098084\Documents\MATLAB\Metabolic Energy'));
 
@@ -113,7 +113,7 @@ for i=1:length(ATendon);
         [lMTinterp(:,m),VMTinterp(:,m),~] = SplineEval_ppuval(auxdata.LMTSpline(m),Time,1);
     end
     [lM,lMtilde,vM,vMtilde ] = FiberVelocity_Ftilde(TForcetilde,TForce_dottilde,auxdata.params,lMTinterp,VMTinterp,ATendon(i),S.BoolLinearSpring);
-    
+        
     % plot simulation results
     subplot(3,3,1)
     plot(Time,MActivation,'Color',Cols(i,:)); hold on;    
@@ -197,3 +197,7 @@ bar(2,PosWork,'k');
 bar(2,NegWork,'k');
 bar(3,abs(PosWork)+abs(NegWork),'k');
 ylabel('Joint Work');
+
+%% paths
+
+rmpath(genpath('C:\Users\u0098084\Documents\MATLAB\Metabolic Energy'));
